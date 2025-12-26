@@ -14,7 +14,7 @@ def get_db():
 
 @router.post("/")
 def create_item(item: schemas.ItemCreate, db: Session = Depends(get_db)):
-    db_item = models.Item(**item.dict())
+    db_item = models.Item(**item.model_dump())
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
