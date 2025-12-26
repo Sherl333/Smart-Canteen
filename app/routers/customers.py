@@ -14,7 +14,7 @@ def get_db():
 
 @router.post("/")
 def create_customer(customer: schemas.CustomerCreate, db: Session = Depends(get_db)):
-    db_customer = models.Customer(**customer.model_dump())
+    db_customer = models.Customer(**customer.dict())
     db.add(db_customer)
     db.commit()
     db.refresh(db_customer)
