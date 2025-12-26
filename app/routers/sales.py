@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import models, schemas
 from app.database import SessionLocal
+from starlette import status
 
 router = APIRouter(prefix="/sales", tags=["Sales"])
 
@@ -12,7 +13,7 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 def create_sale(sale: schemas.SaleCreate, db: Session = Depends(get_db)):
     total_amount = 0
     sale_items = []

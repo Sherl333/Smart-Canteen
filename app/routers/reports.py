@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app import models
 from sqlalchemy import func
+from starlette import status
 
 
 router = APIRouter(prefix="/reports", tags=["Reports"])
@@ -14,7 +15,7 @@ def get_db():
     finally:
         db.close()
 
-@router.get("/invoice/{sale_id}")
+@router.get("/invoice/{sale_id}", status_code=status.HTTP_200_OK)
 def get_invoice(sale_id: int, db: Session = Depends(get_db)):
     sale = db.query(models.Sale).filter(models.Sale.id == sale_id).first()
     items = db.query(models.SaleItem).filter(models.SaleItem.sale_id == sale_id).all()
@@ -26,7 +27,7 @@ def get_invoice(sale_id: int, db: Session = Depends(get_db)):
         "total": sale.total_amount
     }
 
-@router.get("/monthly-sales")
+@router.get("/monthly-sales", status_code=status.HTTP_200_OK)
 def monthly_sales(month: int, year: int, db: Session = Depends(get_db)):
     month_str = f"{month:02d}"
 
@@ -45,12 +46,12 @@ def monthly_sales(month: int, year: int, db: Session = Depends(get_db)):
         "total_revenue": total_sales[1] or 0
     }
 
-@router.get("/total-revenue")
+@router.get("/total-revenue", status_code=status.HTTP_200_OK)
 def total_revenue(db: Session = Depends(get_db)):
     revenue = db.query(func.sum(models.Sale.total_amount)).scalar()
     return {"total_revenue": revenue or 0}
 
-@router.get("/top-items")
+@router.get("/top-items", status_code=status.HTTP_200_OK)
 def top_selling_items(db: Session = Depends(get_db)):
     results = db.query(
         models.Item.name,
